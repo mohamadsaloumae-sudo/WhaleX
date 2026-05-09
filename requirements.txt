@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-binance
+pandas
+ta
+requests
+python-dotenv
+psycopg2-binary
+websocket-client
+google-generativeai
