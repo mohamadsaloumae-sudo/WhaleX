@@ -1822,47 +1822,7 @@ function showTyping(area){
   area.scrollTop = area.scrollHeight;
 }
 
-async function callClaudeAI(userText, area){
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        system: AI_SYSTEM_PROMPT,
-        messages: CHAT_HISTORY,
-      })
-    });
-
-    const data = await response.json();
-    const typing = document.getElementById('typing-msg');
-    if(typing) typing.remove();
-
-    let reply = '';
-    if(data.content && data.content[0]){
-      reply = data.content.map(b=>b.text||'').join('');
-    } else {
-      reply = currentLang==='ar'?
-        '⚠️ لم أستطع الاتصال بالخادم، حاول لاحقاً':
-        '⚠️ Could not connect to server, try again later';
-    }
-
-    CHAT_HISTORY.push({role:'assistant', content:reply});
-    const time2 = new Date().toLocaleTimeString(currentLang==='ar'?'ar':'en',{hour:'2-digit',minute:'2-digit'});
-
-    // Check if reply has signal data → render special card
-    const hasSignal = reply.includes('LONG') || reply.includes('SHORT') || reply.includes('SL:') || reply.includes('TP:');
-
-    area.innerHTML += `
-    <div class="msg ai">
-      <div class="msg-avatar ai">🤖</div>
-      <div style="max-width:85%">
-        <div class="msg-bubble">${reply.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')}</div>
-        <div class="msg-time">WhaleX AI • ${time2}</div>
-      </div>
-    </div>`;
-    area.scrollTop = area.scrollHeight;
+async function callClaudeAI(userText, area){ try { const SERVER_IP = "http://178.105.49.200:8000"; const response = await fetch(`${SERVER_IP}/api/ai-assistant`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: userText }) }); const data = await response.json(); const typing = document.getElementById("typing-msg"); if(typing) typing.remove(); let reply = data.status === "success" ? data.reply : "⚠️ المحرك مشغول"; const time2 = new Date().toLocaleTimeString(currentLang==="ar"?"ar":"en",{hour:"2-digit",minute:"2-digit"}); area.innerHTML += `<div class="msg ai"><div class="msg-avatar ai">🤖</div><div style="max-width:85%"><div class="msg-bubble">${reply.replace(/\n/g,"<br>").replace(/\*\*(.*?)\*\*/g,"<b>$1</b>")}</div><div class="msg-time">WhaleX AI • ${time2}</div></div></div>`; area.scrollTop = area.scrollHeight; } catch(err){ const typing = document.getElementById("typing-msg"); if(typing) typing.remove(); area.innerHTML += `<div class="msg ai"><div class="msg-bubble" style="color:var(--red)">🔴 خطأ في الاتصال بالسيرفر</div></div>`; area.scrollTop = area.scrollHeight; } }
 
   } catch(err){
     const typing = document.getElementById('typing-msg');
