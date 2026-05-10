@@ -1,5 +1,0 @@
-.env
-__pycache__/
-*.pyc
-whale_radar_v4.log
-node_modules/
